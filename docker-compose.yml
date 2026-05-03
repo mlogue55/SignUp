@@ -1,0 +1,11 @@
+services:
+  signup:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - signup_data:/data
+    restart: unless-stopped
+
+volumes:
+  signup_data:
