@@ -130,7 +130,6 @@
     .btn-blue  { background: var(--blue);  color: white; }
     .btn-green { background: var(--green); color: #052e16; }
     .btn-red   { background: var(--red); color: white; font-size: 0.85rem; padding: 7px 11px; min-height: 34px; border-radius: 8px; }
-    .btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.88rem; padding: 8px 13px; min-height: 36px; border-radius: 8px; }
 
     /* ── Sort / filter bar ───────────────────── */
     .sort-bar {
@@ -158,16 +157,8 @@
       transition: background 0.15s, color 0.15s, border-color 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
-    .sort-pill.active {
-      background: var(--blue);
-      color: white;
-      border-color: var(--blue);
-    }
-    .sort-pill.active-amber {
-      background: var(--amber);
-      color: #1c1917;
-      border-color: var(--amber);
-    }
+    .sort-pill.active       { background: var(--blue);  color: white; border-color: var(--blue); }
+    .sort-pill.active-amber { background: var(--amber); color: #1c1917; border-color: var(--amber); }
 
     /* ── Person group headers ────────────────── */
     .person-group { margin-bottom: 18px; }
@@ -203,11 +194,51 @@
       border-left: 5px solid var(--border);
     }
     .item-card.claimed { border-left-color: var(--green); }
-    .item-card.cl-done  { border-left-color: var(--amber); }
+    .item-card.checked { border-left-color: var(--amber); }
+    .item-card.claimed.checked { border-left-color: var(--amber); }
 
-    .item-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 9px; word-break: break-word; }
+    /* Top row: checkbox + name */
+    .item-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
 
-    .item-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .item-cb {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      border: 2px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .item-card.checked .item-cb { background: var(--amber); border-color: var(--amber); color: #1c1917; }
+
+    .item-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      word-break: break-word;
+      flex: 1;
+    }
+    .item-card.checked .item-name { text-decoration: line-through; color: var(--muted); }
+
+    /* Bottom row: sign-up + delete */
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
     .chip {
       display: inline-flex;
@@ -220,80 +251,17 @@
     .chip-green { background: var(--green-dim); color: var(--green-text); }
     .chip-gray  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
 
-    /* ── Inline checklist ──────────────────────── */
-    .item-checklist {
-      margin-top: 10px;
-      border-top: 1px solid var(--border);
-      padding-top: 8px;
-    }
-
-    .cl-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 7px 2px;
-      border-bottom: 1px solid rgba(51,65,85,0.5);
-    }
-    .cl-row:last-of-type { border-bottom: none; }
-
-    .cl-check {
-      flex-shrink: 0;
-      width: 26px;
-      height: 26px;
-      border-radius: 7px;
-      border: 2px solid var(--border);
-      background: var(--surface2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: background 0.15s, border-color 0.15s;
-      user-select: none;
-    }
-    .cl-row.done .cl-check { background: var(--green); border-color: var(--green); color: #052e16; font-weight: 700; }
-
-    .cl-text { flex: 1; font-size: 0.95rem; word-break: break-word; }
-    .cl-row.done .cl-text { text-decoration: line-through; color: var(--muted); }
-
-    .cl-del {
-      flex-shrink: 0;
+    .btn-delete {
+      margin-left: auto;
       background: none;
-      border: none;
+      border: 1px solid var(--border);
       color: var(--muted);
-      font-size: 1rem;
-      line-height: 1;
-      padding: 5px 7px;
-      min-height: unset;
-      border-radius: 6px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .cl-del:active { color: var(--red); }
-
-    .cl-add-row {
-      display: flex;
-      gap: 7px;
-      margin-top: 9px;
-    }
-    .cl-add-row input { flex: 1; padding: 9px 12px; font-size: 0.9rem; border-radius: 8px; }
-    .cl-add-btn {
-      background: var(--surface2);
-      color: var(--text);
-      border: 1.5px solid var(--border);
+      font-size: 0.9rem;
+      padding: 6px 10px;
+      min-height: 32px;
       border-radius: 8px;
-      padding: 9px 14px;
-      font-size: 1rem;
-      font-weight: 700;
-      min-height: unset;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
     }
-    .cl-add-btn:active { background: var(--blue); border-color: var(--blue); }
-
-    .cl-error { color: #fca5a5; font-size: 0.82rem; margin-top: 6px; display: none; }
-    .cl-error.show { display: block; }
+    .btn-delete:active { color: var(--red); border-color: var(--red); }
 
     /* ── Comments thread ────────────────────────── */
     #comment-list { display: flex; flex-direction: column; gap: 12px; }
@@ -303,12 +271,23 @@
       border-radius: 12px;
       padding: 14px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+      transition: opacity 0.2s;
     }
+    .comment-card.resolved { opacity: 0.4; }
 
-    .comment-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; }
+    .comment-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
     .comment-author { font-weight: 700; font-size: 0.95rem; color: var(--blue); }
     .comment-ts     { font-size: 0.75rem; color: var(--muted); }
     .comment-text   { font-size: 0.97rem; line-height: 1.55; word-break: break-word; }
+
+    .resolved-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--green-text);
+      background: var(--green-dim);
+      border-radius: 999px;
+      padding: 2px 9px;
+    }
 
     .replies { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; display: flex; flex-direction: column; gap: 8px; }
 
@@ -320,42 +299,37 @@
     .reply-ts     { font-size: 0.72rem; color: var(--muted); }
     .reply-text   { font-size: 0.92rem; line-height: 1.5; word-break: break-word; }
 
-    .reply-actions { margin-top: 10px; }
-    .btn-reply { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 5px 12px; min-height: unset; border-radius: 20px; }
+    .reply-actions { margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn-reply   { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 5px 12px; min-height: unset; border-radius: 20px; }
+    .btn-resolve { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 5px 12px; min-height: unset; border-radius: 20px; }
+    .btn-resolve.resolved { background: var(--green-dim); color: var(--green-text); border-color: var(--green-dim); }
 
     .reply-input-row { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; display: none; gap: 7px; }
     .reply-input-row.open { display: flex; }
     .reply-input-row input { flex: 1; padding: 10px 12px; font-size: 0.9rem; border-radius: 8px; }
     .reply-send { background: var(--blue); color: white; border: none; border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; font-weight: 700; min-height: unset; cursor: pointer; }
 
+    .resolved-toggle { text-align: center; margin-top: 10px; }
+    .resolved-toggle button { background: none; border: none; color: var(--muted); font-size: 0.82rem; font-weight: 600; min-height: unset; text-decoration: underline; cursor: pointer; padding: 6px; }
+
     /* ── Error box & toast ───────────────────── */
     .error-box {
-      background: #450a0a;
-      color: #fca5a5;
+      background: #450a0a; color: #fca5a5;
       border: 1.5px solid #b91c1c;
-      border-radius: 9px;
-      padding: 10px 13px;
-      font-size: 0.88rem;
-      margin-top: 10px;
-      display: none;
+      border-radius: 9px; padding: 10px 13px;
+      font-size: 0.88rem; margin-top: 10px; display: none;
     }
     .error-box.show { display: block; }
 
     .toast {
-      position: fixed;
-      bottom: 22px;
-      left: 50%;
+      position: fixed; bottom: 22px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: #0f172a;
-      color: var(--text);
+      background: #0f172a; color: var(--text);
       border: 1px solid var(--border);
-      padding: 11px 22px;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 500;
+      padding: 11px 22px; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 500;
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      transition: transform 0.25s ease;
-      z-index: 999;
+      transition: transform 0.25s ease; z-index: 999;
       white-space: nowrap;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
@@ -403,7 +377,7 @@
   <div class="sort-bar">
     <button class="sort-pill active" id="pill-default" onclick="setSort('default')">Default</button>
     <button class="sort-pill" id="pill-name"    onclick="setSort('name')">A–Z</button>
-    <button class="sort-pill" id="pill-cl"      onclick="setSort('checklist')">☑ Done last</button>
+    <button class="sort-pill" id="pill-checked" onclick="setSort('checked')">☑ Done last</button>
     <button class="sort-pill" id="pill-group"   onclick="toggleGroup()">👤 By Person</button>
   </div>
 
@@ -426,6 +400,11 @@
   <div id="comment-list">
     <div class="empty"><div class="icon">⏳</div><p>Loading…</p></div>
   </div>
+  <div class="resolved-toggle" id="resolved-toggle" style="display:none">
+    <button onclick="toggleShowResolved()">
+      <span id="resolved-toggle-label"></span>
+    </button>
+  </div>
 
 </div>
 
@@ -441,16 +420,14 @@
   nameEl.addEventListener("change", () => localStorage.setItem("vacSignupName", nameEl.value));
 
   // ── Sort / group state ─────────────────────────────────
-  let sortMode     = "default"; // 'default' | 'name' | 'checklist'
+  let sortMode      = "default";
   let groupByPerson = false;
-  let allItems     = [];
+  let allItems      = [];
 
   function setSort(mode) {
     sortMode = mode;
-    ["default","name","cl"].forEach(k => document.getElementById(`pill-${k}`).classList.remove("active"));
-    if (mode !== "default" || !groupByPerson) {
-      document.getElementById(`pill-${mode === "checklist" ? "cl" : mode}`).classList.add("active");
-    }
+    ["default","name","checked"].forEach(k => document.getElementById(`pill-${k}`).classList.remove("active"));
+    document.getElementById(`pill-${mode}`).classList.add("active");
     renderItems(allItems);
   }
 
@@ -489,28 +466,22 @@
   function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add("show"); }
   function clearErr(id)     { const el = document.getElementById(id); el.textContent = ""; el.classList.remove("show"); }
 
-  // ── Sort logic ─────────────────────────────────────────
-  function clRatio(item) {
-    const cl = item.checklist || [];
-    if (!cl.length) return -1; // no checklist — float before "all done"
-    return cl.filter(c => c.checked).length / cl.length;
-  }
-
+  // ── Sort ───────────────────────────────────────────────
   function sortedItems(items) {
     const copy = [...items];
     if (sortMode === "name") {
       copy.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortMode === "checklist") {
-      copy.sort((a, b) => clRatio(a) - clRatio(b));
+    } else if (sortMode === "checked") {
+      // unchecked first, checked last
+      copy.sort((a, b) => (a.checked ? 1 : 0) - (b.checked ? 1 : 0));
     }
     return copy;
   }
 
   // ── Item card HTML ─────────────────────────────────────
   function itemCardHtml(item) {
-    const cl      = item.checklist || [];
-    const doneAll = cl.length && cl.every(c => c.checked);
-    const classes = ["item-card", item.signed_up_by ? "claimed" : "", doneAll ? "cl-done" : ""].filter(Boolean).join(" ");
+    const checkedClass = item.checked ? " checked" : "";
+    const claimedClass = item.signed_up_by ? " claimed" : "";
 
     const signRow = item.signed_up_by
       ? `<span class="chip chip-green">✓ ${esc(item.signed_up_by)}</span>
@@ -518,25 +489,15 @@
       : `<span class="chip chip-gray">Available</span>
          <button class="btn-green" onclick="signUp(${item.id})">Sign Up</button>`;
 
-    const clRows = cl.map(c => `
-      <div class="cl-row${c.checked ? " done" : ""}">
-        <div class="cl-check" onclick="toggleClItem(${item.id},${c.id})">${c.checked ? "✓" : ""}</div>
-        <div class="cl-text">${esc(c.text)}</div>
-        <button class="cl-del" onclick="deleteClItem(${item.id},${c.id})" title="Remove">✕</button>
-      </div>`).join("");
-
     return `
-      <div class="${classes}" id="ic-${item.id}">
-        <div class="item-name">${esc(item.name)}</div>
-        <div class="item-row">${signRow}</div>
-        <div class="item-checklist">
-          ${clRows}
-          <div class="cl-add-row">
-            <input type="text" id="cl-input-${item.id}" placeholder="Add to checklist…" maxlength="120"
-                   onkeydown="if(event.key==='Enter') addClItem(${item.id})">
-            <button class="cl-add-btn" onclick="addClItem(${item.id})">+</button>
-          </div>
-          <div class="cl-error" id="cl-err-${item.id}"></div>
+      <div class="item-card${claimedClass}${checkedClass}" id="ic-${item.id}">
+        <div class="item-top">
+          <div class="item-cb" onclick="toggleCheck(${item.id})">${item.checked ? "✓" : ""}</div>
+          <div class="item-name">${esc(item.name)}</div>
+        </div>
+        <div class="item-row">
+          ${signRow}
+          <button class="btn-delete" onclick="deleteItem(${item.id})" title="Delete item">🗑</button>
         </div>
       </div>`;
   }
@@ -553,7 +514,6 @@
     }
 
     if (groupByPerson) {
-      // Build groups: each name + "Unclaimed"
       const groups = {};
       NAMES.forEach(n => { groups[n] = []; });
       groups["Unclaimed"] = [];
@@ -606,6 +566,11 @@
     finally   { btn.disabled = false; }
   }
 
+  async function toggleCheck(itemId) {
+    await fetch(`/api/items/${itemId}/check`, { method:"POST" });
+    loadItems();
+  }
+
   async function signUp(itemId) {
     const myName = nameEl.value;
     if (!myName) { toast("Select your name at the top first!"); return; }
@@ -621,39 +586,47 @@
     if (r.ok) { toast("Cleared."); loadItems(); }
   }
 
-  // ── Per-item checklist ─────────────────────────────────
-  async function addClItem(itemId) {
-    const input = document.getElementById(`cl-input-${itemId}`);
-    const errEl = document.getElementById(`cl-err-${itemId}`);
-    const text  = input?.value.trim();
-    if (errEl) { errEl.textContent = ""; errEl.classList.remove("show"); }
-    if (!text) { if (errEl) { errEl.textContent = "Can't be empty."; errEl.classList.add("show"); } return; }
-
-    const r    = await fetch(`/api/items/${itemId}/checklist`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text}) });
-    const data = await r.json();
-    if (!r.ok) { if (errEl) { errEl.textContent = data.error; errEl.classList.add("show"); } return; }
-    input.value = "";
-    loadItems();
-  }
-
-  async function toggleClItem(itemId, clId) {
-    await fetch(`/api/items/${itemId}/checklist/${clId}/toggle`, { method:"POST" });
-    loadItems();
-  }
-
-  async function deleteClItem(itemId, clId) {
-    await fetch(`/api/items/${itemId}/checklist/${clId}`, { method:"DELETE" });
-    loadItems();
+  async function deleteItem(itemId) {
+    if (!confirm("Delete this item?")) return;
+    const r = await fetch(`/api/items/${itemId}`, { method:"DELETE" });
+    if (r.ok) { toast("Item deleted."); loadItems(); }
   }
 
   // ── Comments thread ────────────────────────────────────
+  let showResolved = false;
+  let allComments  = [];
+
+  function toggleShowResolved() {
+    showResolved = !showResolved;
+    renderComments(allComments);
+  }
+
   function renderComments(data) {
-    const list = document.getElementById("comment-list");
+    allComments = data;
+    const list      = document.getElementById("comment-list");
+    const toggleEl  = document.getElementById("resolved-toggle");
+    const toggleLbl = document.getElementById("resolved-toggle-label");
+    const resolvedN = data.filter(c => c.resolved).length;
+
+    if (resolvedN > 0) {
+      toggleEl.style.display = "block";
+      toggleLbl.textContent  = showResolved ? `Hide resolved (${resolvedN})` : `Show resolved (${resolvedN})`;
+    } else {
+      toggleEl.style.display = "none";
+    }
+
+    const visible = [...data].reverse().filter(c => showResolved || !c.resolved);
+
     if (!data.length) {
       list.innerHTML = `<div class="empty"><div class="icon">💬</div><p>No comments yet — start the conversation!</p></div>`;
       return;
     }
-    list.innerHTML = [...data].reverse().map(c => {
+    if (!visible.length) {
+      list.innerHTML = `<div class="empty"><div class="icon">✅</div><p>All comments resolved.</p></div>`;
+      return;
+    }
+
+    list.innerHTML = visible.map(c => {
       const replies = c.replies.map(r => `
         <div class="reply">
           <div class="reply-bar"></div>
@@ -667,15 +640,19 @@
         </div>`).join("");
 
       return `
-        <div class="comment-card" id="cc-${c.id}">
+        <div class="comment-card${c.resolved ? " resolved" : ""}" id="cc-${c.id}">
           <div class="comment-meta">
             <span class="comment-author">${esc(c.author)}</span>
             <span class="comment-ts">${relTime(c.timestamp)}</span>
+            ${c.resolved ? `<span class="resolved-badge">✓ Resolved</span>` : ""}
           </div>
           <div class="comment-text">${esc(c.text)}</div>
           ${replies ? `<div class="replies">${replies}</div>` : ""}
           <div class="reply-actions">
             <button class="btn-reply" onclick="toggleReplyInput(${c.id})">↩ Reply</button>
+            <button class="btn-resolve${c.resolved ? " resolved" : ""}" onclick="resolveComment(${c.id})">
+              ${c.resolved ? "✓ Resolved" : "Resolve"}
+            </button>
           </div>
           <div class="reply-input-row" id="reply-row-${c.id}">
             <input type="text" id="reply-input-${c.id}" placeholder="Write a reply…" maxlength="500"
@@ -734,9 +711,16 @@
     loadComments();
   }
 
+  async function resolveComment(commentId) {
+    const r = await fetch(`/api/comments/${commentId}/resolve`, { method:"POST" });
+    if (r.ok) loadComments();
+  }
+
   // ── Init ───────────────────────────────────────────────
   document.getElementById("new-item").addEventListener("keydown", e => { if (e.key === "Enter") addItem(); });
-  document.getElementById("new-comment").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); postComment(); } });
+  document.getElementById("new-comment").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); postComment(); }
+  });
 
   loadItems();
   loadComments();

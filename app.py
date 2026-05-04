@@ -69,14 +69,37 @@ def add_item():
             "id": data["next_id"],
             "name": name,
             "signed_up_by": None,
-            "checklist": [],
-            "next_cl_id": 1,
+            "checked": False,
         }
         data["items"].append(new_item)
         data["next_id"] += 1
         save_data(data)
 
     return jsonify(new_item), 201
+
+
+@app.route("/api/items/<int:item_id>", methods=["DELETE"])
+def delete_item(item_id):
+    with lock:
+        data = load_data()
+        before = len(data["items"])
+        data["items"] = [i for i in data["items"] if i["id"] != item_id]
+        if len(data["items"]) == before:
+            return jsonify({"error": "Item not found."}), 404
+        save_data(data)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/items/<int:item_id>/check", methods=["POST"])
+def toggle_item_check(item_id):
+    with lock:
+        data = load_data()
+        for item in data["items"]:
+            if item["id"] == item_id:
+                item["checked"] = not item.get("checked", False)
+                save_data(data)
+                return jsonify(item)
+    return jsonify({"error": "Item not found."}), 404
 
 
 @app.route("/api/items/<int:item_id>/signup", methods=["POST"])
@@ -113,63 +136,6 @@ def clear_signup(item_id):
     return jsonify({"error": "Item not found."}), 404
 
 
-# ── Per-item checklist ────────────────────────────────────────────────────────
-
-@app.route("/api/items/<int:item_id>/checklist", methods=["POST"])
-def add_checklist_item(item_id):
-    body = request.get_json(silent=True) or {}
-    text = body.get("text", "").strip()
-
-    if not text:
-        return jsonify({"error": "Checklist item cannot be empty."}), 400
-    if len(text) > 120:
-        return jsonify({"error": "Too long (max 120 characters)."}), 400
-
-    with lock:
-        data = load_data()
-        for item in data["items"]:
-            if item["id"] == item_id:
-                cl = item.setdefault("checklist", [])
-                if any(c["text"].lower() == text.lower() for c in cl):
-                    return jsonify({"error": f'"{text}" is already on this checklist.'}), 409
-
-                new_cl = {"id": item.get("next_cl_id", 1), "text": text, "checked": False}
-                cl.append(new_cl)
-                item["next_cl_id"] = item.get("next_cl_id", 1) + 1
-                save_data(data)
-                return jsonify(new_cl), 201
-
-    return jsonify({"error": "Item not found."}), 404
-
-
-@app.route("/api/items/<int:item_id>/checklist/<int:cl_id>/toggle", methods=["POST"])
-def toggle_checklist_item(item_id, cl_id):
-    with lock:
-        data = load_data()
-        for item in data["items"]:
-            if item["id"] == item_id:
-                for cl in item.get("checklist", []):
-                    if cl["id"] == cl_id:
-                        cl["checked"] = not cl["checked"]
-                        save_data(data)
-                        return jsonify(cl)
-
-    return jsonify({"error": "Not found."}), 404
-
-
-@app.route("/api/items/<int:item_id>/checklist/<int:cl_id>", methods=["DELETE"])
-def delete_checklist_item(item_id, cl_id):
-    with lock:
-        data = load_data()
-        for item in data["items"]:
-            if item["id"] == item_id:
-                item["checklist"] = [c for c in item.get("checklist", []) if c["id"] != cl_id]
-                save_data(data)
-                return jsonify({"ok": True})
-
-    return jsonify({"error": "Item not found."}), 404
-
-
 # ── Comments / thread ─────────────────────────────────────────────────────────
 
 @app.route("/api/comments", methods=["GET"])
@@ -199,6 +165,7 @@ def post_comment():
             "author": author,
             "text": text,
             "timestamp": now_iso(),
+            "resolved": False,
             "replies": [],
             "next_reply_id": 1,
         }
@@ -236,6 +203,19 @@ def post_reply(comment_id):
                 comment["next_reply_id"] = comment.get("next_reply_id", 1) + 1
                 save_data(data)
                 return jsonify(reply), 201
+
+    return jsonify({"error": "Comment not found."}), 404
+
+
+@app.route("/api/comments/<int:comment_id>/resolve", methods=["POST"])
+def resolve_comment(comment_id):
+    with lock:
+        data = load_data()
+        for comment in data.get("comments", []):
+            if comment["id"] == comment_id:
+                comment["resolved"] = not comment.get("resolved", False)
+                save_data(data)
+                return jsonify(comment)
 
     return jsonify({"error": "Comment not found."}), 404
 
