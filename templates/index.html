@@ -5,28 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Vacation Sign-Up</title>
   <style>
+    :root {
+      --bg:          #0f172a;
+      --surface:     #1e293b;
+      --surface2:    #273549;
+      --border:      #334155;
+      --text:        #e2e8f0;
+      --text-muted:  #64748b;
+      --blue:        #3b82f6;
+      --blue-dim:    #1d4ed8;
+      --green:       #22c55e;
+      --green-dim:   #15803d;
+      --red:         #ef4444;
+      --red-dim:     #b91c1c;
+      --chip-green-bg:   #14532d;
+      --chip-green-text: #86efac;
+      --chip-gray-bg:    #1e293b;
+      --chip-gray-text:  #94a3b8;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #eef2f7;
-      color: #1a202c;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      padding-bottom: 32px;
+      padding-bottom: 40px;
     }
 
     header {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      background: linear-gradient(135deg, #1e40af, #1e3a8a);
       color: white;
       padding: 18px 16px 14px;
       text-align: center;
       position: sticky;
       top: 0;
       z-index: 10;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.5);
     }
     header h1 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; }
-    header p  { font-size: 0.82rem; opacity: 0.85; margin-top: 3px; }
+    header p  { font-size: 0.82rem; opacity: 0.75; margin-top: 3px; }
 
     .container {
       max-width: 560px;
@@ -34,40 +53,57 @@
       padding: 14px 14px 0;
     }
 
+    /* ── Section dividers ───────────────────── */
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin: 20px 0 10px 4px;
+    }
+
     /* ── Cards ─────────────────────────────── */
     .card {
-      background: white;
+      background: var(--surface);
       border-radius: 14px;
       padding: 16px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
     .card-label {
       font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #64748b;
+      color: var(--text-muted);
       margin-bottom: 10px;
     }
 
     /* ── Inputs & Selects ───────────────────── */
-    select, input[type="text"] {
+    select, input[type="text"], textarea {
       width: 100%;
       padding: 13px 14px;
-      border: 2px solid #e2e8f0;
+      border: 2px solid var(--border);
       border-radius: 10px;
       font-size: 1rem;
-      color: #1a202c;
-      background: white;
+      color: var(--text);
+      background: var(--surface2);
       -webkit-appearance: none;
       appearance: none;
       transition: border-color 0.15s;
     }
-    select:focus, input[type="text"]:focus {
+    select:focus, input[type="text"]:focus, textarea:focus {
       outline: none;
-      border-color: #2563eb;
+      border-color: var(--blue);
     }
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+    ::placeholder { color: var(--text-muted); }
 
     .select-wrap { position: relative; }
     .select-wrap::after {
@@ -77,9 +113,11 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 1rem;
-      color: #94a3b8;
+      color: var(--text-muted);
       pointer-events: none;
     }
+    /* keep dropdown options readable on iOS dark */
+    option { background: #1e293b; color: var(--text); }
 
     .input-row { display: flex; gap: 8px; }
     .input-row input { flex: 1; min-width: 0; }
@@ -100,24 +138,26 @@
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
     }
-    button:active { filter: brightness(0.88); transform: scale(0.97); }
+    button:disabled { opacity: 0.5; cursor: default; }
+    button:not(:disabled):active { filter: brightness(0.82); transform: scale(0.96); }
 
-    .btn-blue   { background: #2563eb; color: white; }
-    .btn-green  { background: #16a34a; color: white; }
-    .btn-red    { background: #dc2626; color: white; font-size: 0.88rem; padding: 9px 13px; min-height: 38px; border-radius: 8px; }
+    .btn-blue  { background: var(--blue);  color: white; }
+    .btn-green { background: var(--green); color: #052e16; }
+    .btn-red   { background: var(--red);   color: white; font-size: 0.88rem; padding: 8px 12px; min-height: 36px; border-radius: 8px; }
+    .btn-ghost { background: var(--surface2); color: var(--text-muted); font-size: 0.88rem; padding: 8px 12px; min-height: 36px; border-radius: 8px; }
 
-    /* ── Item cards ─────────────────────────── */
+    /* ── Sign-up item cards ──────────────────── */
     #item-list { display: flex; flex-direction: column; gap: 10px; }
 
     .item-card {
-      background: white;
+      background: var(--surface);
       border-radius: 12px;
       padding: 14px 14px 12px;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.07);
-      border-left: 5px solid #cbd5e1;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+      border-left: 5px solid var(--border);
       transition: border-color 0.2s;
     }
-    .item-card.claimed { border-left-color: #16a34a; }
+    .item-card.claimed { border-left-color: var(--green); }
 
     .item-name {
       font-size: 1.1rem;
@@ -142,14 +182,89 @@
       font-size: 0.88rem;
       font-weight: 600;
     }
-    .chip-green { background: #dcfce7; color: #15803d; }
-    .chip-gray  { background: #f1f5f9; color: #64748b; }
+    .chip-green { background: var(--chip-green-bg); color: var(--chip-green-text); }
+    .chip-gray  { background: var(--chip-gray-bg);  color: var(--chip-gray-text); border: 1px solid var(--border); }
+
+    /* ── Checklist ───────────────────────────── */
+    #cl-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .cl-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      background: var(--surface);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      transition: opacity 0.15s;
+    }
+    .cl-item.done { opacity: 0.5; }
+
+    .cl-check {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cl-item.done .cl-check {
+      background: var(--green);
+      border-color: var(--green);
+      color: #052e16;
+    }
+
+    .cl-text {
+      flex: 1;
+      font-size: 1rem;
+      word-break: break-word;
+    }
+    .cl-item.done .cl-text { text-decoration: line-through; color: var(--text-muted); }
+
+    .cl-del {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      cursor: pointer;
+      padding: 4px 6px;
+      min-height: unset;
+      border-radius: 6px;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cl-del:active { color: var(--red); }
+
+    /* ── Notes save bar ──────────────────────── */
+    .notes-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .notes-saved {
+      font-size: 0.82rem;
+      color: var(--green);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .notes-saved.show { opacity: 1; }
 
     /* ── Error / toast ──────────────────────── */
     .error-box {
-      background: #fef2f2;
-      color: #b91c1c;
-      border: 1.5px solid #fca5a5;
+      background: #450a0a;
+      color: #fca5a5;
+      border: 1.5px solid var(--red-dim);
       border-radius: 9px;
       padding: 10px 13px;
       font-size: 0.9rem;
@@ -163,13 +278,14 @@
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: #1e293b;
-      color: white;
-      padding: 12px 20px;
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 12px 22px;
       border-radius: 10px;
       font-size: 0.9rem;
       font-weight: 500;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
       transition: transform 0.25s ease;
       z-index: 999;
       white-space: nowrap;
@@ -179,11 +295,11 @@
     /* ── Empty / loading ────────────────────── */
     .empty {
       text-align: center;
-      padding: 36px 16px;
-      color: #94a3b8;
+      padding: 28px 16px;
+      color: var(--text-muted);
     }
-    .empty .icon { font-size: 2.8rem; margin-bottom: 10px; }
-    .empty p { font-size: 0.95rem; }
+    .empty .icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .empty p { font-size: 0.93rem; }
   </style>
 </head>
 <body>
@@ -208,9 +324,11 @@
     </div>
   </div>
 
-  <!-- Add item -->
+  <!-- ── Sign-Up List ─────────────────────── -->
+  <div class="section-title">📦 Bring List — sign up to bring something</div>
+
   <div class="card">
-    <div class="card-label">Add something to bring</div>
+    <div class="card-label">Add an item</div>
     <div class="input-row">
       <input type="text" id="new-item" placeholder="e.g. Sunscreen, Cooler…" maxlength="80" autocomplete="off">
       <button class="btn-blue" id="add-btn" onclick="addItem()">Add</button>
@@ -218,9 +336,35 @@
     <div class="error-box" id="add-error"></div>
   </div>
 
-  <!-- List -->
   <div id="item-list">
     <div class="empty"><div class="icon">⏳</div><p>Loading…</p></div>
+  </div>
+
+  <!-- ── Checklist ────────────────────────── -->
+  <div class="section-title">✅ Checklist — things to remember</div>
+
+  <div class="card">
+    <div class="card-label">Add a checklist item</div>
+    <div class="input-row">
+      <input type="text" id="new-cl" placeholder="e.g. Book campsite, Charge speaker…" maxlength="120" autocomplete="off">
+      <button class="btn-blue" id="cl-btn" onclick="addChecklistItem()">Add</button>
+    </div>
+    <div class="error-box" id="cl-error"></div>
+  </div>
+
+  <div id="cl-list">
+    <div class="empty"><div class="icon">⏳</div><p>Loading…</p></div>
+  </div>
+
+  <!-- ── Notes ────────────────────────────── -->
+  <div class="section-title">📝 Shared Notes</div>
+
+  <div class="card">
+    <textarea id="notes-area" placeholder="Meeting time, directions, reminders…" maxlength="4000"></textarea>
+    <div class="notes-footer">
+      <span class="notes-saved" id="notes-saved">Saved ✓</span>
+      <button class="btn-ghost" onclick="saveNotes()">Save Notes</button>
+    </div>
   </div>
 
 </div>
@@ -229,9 +373,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const NAMES = {{ names | tojson }};
-  let items = [];
-
   // ── Helpers ───────────────────────────────────────────
   function esc(s) {
     const d = document.createElement("div");
@@ -258,20 +399,13 @@
     el.classList.remove("show");
   }
 
-  // ── Render ────────────────────────────────────────────
-  function render(data) {
-    items = data;
+  // ── Sign-up list ──────────────────────────────────────
+  function renderItems(data) {
     const list = document.getElementById("item-list");
-
     if (!data.length) {
-      list.innerHTML = `
-        <div class="empty">
-          <div class="icon">📋</div>
-          <p>No items yet — add the first thing to bring!</p>
-        </div>`;
+      list.innerHTML = `<div class="empty"><div class="icon">📋</div><p>No items yet — add the first thing to bring!</p></div>`;
       return;
     }
-
     list.innerHTML = data.map(item => {
       if (item.signed_up_by) {
         return `
@@ -294,24 +428,21 @@
     }).join("");
   }
 
-  // ── API calls ─────────────────────────────────────────
   async function loadItems() {
     try {
       const r = await fetch("/api/items");
-      render(await r.json());
-    } catch { /* network hiccup — keep current view */ }
+      renderItems(await r.json());
+    } catch {}
   }
 
   async function addItem() {
     const input = document.getElementById("new-item");
     const name  = input.value.trim();
     clearError("add-error");
-
     if (!name) { showError("add-error", "Please enter an item name."); return; }
 
     const btn = document.getElementById("add-btn");
     btn.disabled = true;
-
     try {
       const r = await fetch("/api/items", {
         method: "POST",
@@ -337,7 +468,6 @@
       document.getElementById("my-name").focus();
       return;
     }
-
     try {
       const r = await fetch(`/api/items/${itemId}/signup`, {
         method: "POST",
@@ -362,13 +492,116 @@
     }
   }
 
-  // ── Init ──────────────────────────────────────────────
-  document.getElementById("new-item").addEventListener("keydown", e => {
-    if (e.key === "Enter") addItem();
+  // ── Checklist ─────────────────────────────────────────
+  function renderChecklist(data) {
+    const list = document.getElementById("cl-list");
+    if (!data.length) {
+      list.innerHTML = `<div class="empty"><div class="icon">☑️</div><p>No checklist items yet.</p></div>`;
+      return;
+    }
+    list.innerHTML = data.map(item => `
+      <div class="cl-item${item.checked ? " done" : ""}" id="cl-${item.id}">
+        <div class="cl-check" onclick="toggleChecklistItem(${item.id})">${item.checked ? "✓" : ""}</div>
+        <div class="cl-text">${esc(item.text)}</div>
+        <button class="cl-del" onclick="deleteChecklistItem(${item.id})" title="Remove">✕</button>
+      </div>`).join("");
+  }
+
+  async function loadChecklist() {
+    try {
+      const r = await fetch("/api/checklist");
+      renderChecklist(await r.json());
+    } catch {}
+  }
+
+  async function addChecklistItem() {
+    const input = document.getElementById("new-cl");
+    const text  = input.value.trim();
+    clearError("cl-error");
+    if (!text) { showError("cl-error", "Please enter a checklist item."); return; }
+
+    const btn = document.getElementById("cl-btn");
+    btn.disabled = true;
+    try {
+      const r = await fetch("/api/checklist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const data = await r.json();
+      if (!r.ok) { showError("cl-error", data.error); return; }
+      input.value = "";
+      loadChecklist();
+    } catch {
+      showError("cl-error", "Network error — please try again.");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function toggleChecklistItem(id) {
+    try {
+      await fetch(`/api/checklist/${id}/toggle`, { method: "POST" });
+      loadChecklist();
+    } catch {
+      showToast("Network error — please try again.");
+    }
+  }
+
+  async function deleteChecklistItem(id) {
+    try {
+      await fetch(`/api/checklist/${id}`, { method: "DELETE" });
+      loadChecklist();
+    } catch {
+      showToast("Network error — please try again.");
+    }
+  }
+
+  // ── Notes ─────────────────────────────────────────────
+  let notesSaveTimer = null;
+
+  async function loadNotes() {
+    try {
+      const r = await fetch("/api/notes");
+      const data = await r.json();
+      const ta = document.getElementById("notes-area");
+      if (ta !== document.activeElement) ta.value = data.notes;
+    } catch {}
+  }
+
+  async function saveNotes() {
+    const notes = document.getElementById("notes-area").value;
+    try {
+      const r = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes }),
+      });
+      if (r.ok) {
+        const saved = document.getElementById("notes-saved");
+        saved.classList.add("show");
+        setTimeout(() => saved.classList.remove("show"), 2000);
+      }
+    } catch {
+      showToast("Network error — notes not saved.");
+    }
+  }
+
+  // Auto-save notes 1.5s after user stops typing
+  document.getElementById("notes-area").addEventListener("input", () => {
+    clearTimeout(notesSaveTimer);
+    notesSaveTimer = setTimeout(saveNotes, 1500);
   });
 
+  // ── Init ──────────────────────────────────────────────
+  document.getElementById("new-item").addEventListener("keydown", e => { if (e.key === "Enter") addItem(); });
+  document.getElementById("new-cl").addEventListener("keydown",   e => { if (e.key === "Enter") addChecklistItem(); });
+
   loadItems();
-  setInterval(loadItems, 20000); // auto-refresh every 20s
+  loadChecklist();
+  loadNotes();
+
+  setInterval(() => { loadItems(); loadChecklist(); loadNotes(); }, 20000);
 </script>
 </body>
 </html>
