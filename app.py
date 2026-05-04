@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, render_template
 import json
 import os
 import threading
+from datetime import datetime, timezone
 
 app = Flask(__name__)
 lock = threading.Lock()
@@ -16,11 +17,15 @@ NAMES = [
 ]
 
 
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
+
+
 def load_data():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
             return json.load(f)
-    return {"items": [], "checklist": [], "notes": "", "next_id": 1, "next_cl_id": 1}
+    return {"items": [], "comments": [], "next_id": 1, "next_comment_id": 1}
 
 
 def save_data(data):
@@ -60,7 +65,13 @@ def add_item():
         if any(item["name"].lower() == name.lower() for item in data["items"]):
             return jsonify({"error": f'"{name}" is already on the list.'}), 409
 
-        new_item = {"id": data["next_id"], "name": name, "signed_up_by": None}
+        new_item = {
+            "id": data["next_id"],
+            "name": name,
+            "signed_up_by": None,
+            "checklist": [],
+            "next_cl_id": 1,
+        }
         data["items"].append(new_item)
         data["next_id"] += 1
         save_data(data)
@@ -102,17 +113,10 @@ def clear_signup(item_id):
     return jsonify({"error": "Item not found."}), 404
 
 
-# ── Checklist ─────────────────────────────────────────────────────────────────
+# ── Per-item checklist ────────────────────────────────────────────────────────
 
-@app.route("/api/checklist", methods=["GET"])
-def get_checklist():
-    with lock:
-        data = load_data()
-    return jsonify(data.get("checklist", []))
-
-
-@app.route("/api/checklist", methods=["POST"])
-def add_checklist_item():
+@app.route("/api/items/<int:item_id>/checklist", methods=["POST"])
+def add_checklist_item(item_id):
     body = request.get_json(silent=True) or {}
     text = body.get("text", "").strip()
 
@@ -123,62 +127,117 @@ def add_checklist_item():
 
     with lock:
         data = load_data()
-        cl = data.setdefault("checklist", [])
-        if any(i["text"].lower() == text.lower() for i in cl):
-            return jsonify({"error": f'"{text}" is already on the checklist.'}), 409
-
-        new_item = {"id": data.get("next_cl_id", 1), "text": text, "checked": False}
-        cl.append(new_item)
-        data["next_cl_id"] = data.get("next_cl_id", 1) + 1
-        save_data(data)
-
-    return jsonify(new_item), 201
-
-
-@app.route("/api/checklist/<int:item_id>/toggle", methods=["POST"])
-def toggle_checklist_item(item_id):
-    with lock:
-        data = load_data()
-        for item in data.get("checklist", []):
+        for item in data["items"]:
             if item["id"] == item_id:
-                item["checked"] = not item["checked"]
+                cl = item.setdefault("checklist", [])
+                if any(c["text"].lower() == text.lower() for c in cl):
+                    return jsonify({"error": f'"{text}" is already on this checklist.'}), 409
+
+                new_cl = {"id": item.get("next_cl_id", 1), "text": text, "checked": False}
+                cl.append(new_cl)
+                item["next_cl_id"] = item.get("next_cl_id", 1) + 1
                 save_data(data)
-                return jsonify(item)
+                return jsonify(new_cl), 201
 
     return jsonify({"error": "Item not found."}), 404
 
 
-@app.route("/api/checklist/<int:item_id>", methods=["DELETE"])
-def delete_checklist_item(item_id):
+@app.route("/api/items/<int:item_id>/checklist/<int:cl_id>/toggle", methods=["POST"])
+def toggle_checklist_item(item_id, cl_id):
     with lock:
         data = load_data()
-        cl = data.get("checklist", [])
-        data["checklist"] = [i for i in cl if i["id"] != item_id]
-        save_data(data)
+        for item in data["items"]:
+            if item["id"] == item_id:
+                for cl in item.get("checklist", []):
+                    if cl["id"] == cl_id:
+                        cl["checked"] = not cl["checked"]
+                        save_data(data)
+                        return jsonify(cl)
 
-    return jsonify({"ok": True})
+    return jsonify({"error": "Not found."}), 404
 
 
-# ── Notes ─────────────────────────────────────────────────────────────────────
-
-@app.route("/api/notes", methods=["GET"])
-def get_notes():
+@app.route("/api/items/<int:item_id>/checklist/<int:cl_id>", methods=["DELETE"])
+def delete_checklist_item(item_id, cl_id):
     with lock:
         data = load_data()
-    return jsonify({"notes": data.get("notes", "")})
+        for item in data["items"]:
+            if item["id"] == item_id:
+                item["checklist"] = [c for c in item.get("checklist", []) if c["id"] != cl_id]
+                save_data(data)
+                return jsonify({"ok": True})
+
+    return jsonify({"error": "Item not found."}), 404
 
 
-@app.route("/api/notes", methods=["POST"])
-def save_notes():
+# ── Comments / thread ─────────────────────────────────────────────────────────
+
+@app.route("/api/comments", methods=["GET"])
+def get_comments():
+    with lock:
+        data = load_data()
+    return jsonify(data.get("comments", []))
+
+
+@app.route("/api/comments", methods=["POST"])
+def post_comment():
     body = request.get_json(silent=True) or {}
-    notes = body.get("notes", "")[:4000]  # cap at 4000 chars
+    author = body.get("author", "").strip()
+    text = body.get("text", "").strip()
+
+    if not author or author not in NAMES:
+        return jsonify({"error": "Please select your name first."}), 400
+    if not text:
+        return jsonify({"error": "Comment cannot be empty."}), 400
+    if len(text) > 500:
+        return jsonify({"error": "Too long (max 500 characters)."}), 400
 
     with lock:
         data = load_data()
-        data["notes"] = notes
+        new_comment = {
+            "id": data.get("next_comment_id", 1),
+            "author": author,
+            "text": text,
+            "timestamp": now_iso(),
+            "replies": [],
+            "next_reply_id": 1,
+        }
+        data.setdefault("comments", []).append(new_comment)
+        data["next_comment_id"] = data.get("next_comment_id", 1) + 1
         save_data(data)
 
-    return jsonify({"notes": notes})
+    return jsonify(new_comment), 201
+
+
+@app.route("/api/comments/<int:comment_id>/replies", methods=["POST"])
+def post_reply(comment_id):
+    body = request.get_json(silent=True) or {}
+    author = body.get("author", "").strip()
+    text = body.get("text", "").strip()
+
+    if not author or author not in NAMES:
+        return jsonify({"error": "Please select your name first."}), 400
+    if not text:
+        return jsonify({"error": "Reply cannot be empty."}), 400
+    if len(text) > 500:
+        return jsonify({"error": "Too long (max 500 characters)."}), 400
+
+    with lock:
+        data = load_data()
+        for comment in data.get("comments", []):
+            if comment["id"] == comment_id:
+                reply = {
+                    "id": comment.get("next_reply_id", 1),
+                    "author": author,
+                    "text": text,
+                    "timestamp": now_iso(),
+                }
+                comment["replies"].append(reply)
+                comment["next_reply_id"] = comment.get("next_reply_id", 1) + 1
+                save_data(data)
+                return jsonify(reply), 201
+
+    return jsonify({"error": "Comment not found."}), 404
 
 
 if __name__ == "__main__":
