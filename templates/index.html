@@ -17,6 +17,7 @@
       --green-dim:  #14532d;
       --green-text: #86efac;
       --red:        #ef4444;
+      --amber:      #f59e0b;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -131,6 +132,66 @@
     .btn-red   { background: var(--red); color: white; font-size: 0.85rem; padding: 7px 11px; min-height: 34px; border-radius: 8px; }
     .btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.88rem; padding: 8px 13px; min-height: 36px; border-radius: 8px; }
 
+    /* ── Sort / filter bar ───────────────────── */
+    .sort-bar {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .sort-bar::-webkit-scrollbar { display: none; }
+
+    .sort-pill {
+      flex-shrink: 0;
+      background: var(--surface);
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 7px 14px;
+      min-height: unset;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sort-pill.active {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+    .sort-pill.active-amber {
+      background: var(--amber);
+      color: #1c1917;
+      border-color: var(--amber);
+    }
+
+    /* ── Person group headers ────────────────── */
+    .person-group { margin-bottom: 18px; }
+    .person-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--amber);
+      margin-bottom: 8px;
+      padding-left: 2px;
+    }
+    .person-header .ph-count {
+      background: var(--surface2);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 1px 8px;
+      font-size: 0.72rem;
+    }
+    .person-group-items { display: flex; flex-direction: column; gap: 10px; }
+
     /* ── Sign-up item cards ───────────────────── */
     #item-list { display: flex; flex-direction: column; gap: 10px; }
 
@@ -142,6 +203,7 @@
       border-left: 5px solid var(--border);
     }
     .item-card.claimed { border-left-color: var(--green); }
+    .item-card.cl-done  { border-left-color: var(--amber); }
 
     .item-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 9px; word-break: break-word; }
 
@@ -158,54 +220,39 @@
     .chip-green { background: var(--green-dim); color: var(--green-text); }
     .chip-gray  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
 
-    /* ── Per-item checklist panel ──────────────── */
-    .cl-toggle {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 5px 10px;
-      min-height: unset;
-      border-radius: 20px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-    .cl-toggle:active { filter: brightness(0.8); }
-
-    .cl-panel {
+    /* ── Inline checklist ──────────────────────── */
+    .item-checklist {
       margin-top: 10px;
       border-top: 1px solid var(--border);
-      padding-top: 10px;
-      display: none;
+      padding-top: 8px;
     }
-    .cl-panel.open { display: block; }
 
     .cl-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 4px;
-      border-bottom: 1px solid var(--border);
+      padding: 7px 2px;
+      border-bottom: 1px solid rgba(51,65,85,0.5);
     }
     .cl-row:last-of-type { border-bottom: none; }
 
     .cl-check {
       flex-shrink: 0;
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
       border: 2px solid var(--border);
       background: var(--surface2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       transition: background 0.15s, border-color 0.15s;
+      user-select: none;
     }
-    .cl-row.done .cl-check { background: var(--green); border-color: var(--green); color: #052e16; }
+    .cl-row.done .cl-check { background: var(--green); border-color: var(--green); color: #052e16; font-weight: 700; }
 
     .cl-text { flex: 1; font-size: 0.95rem; word-break: break-word; }
     .cl-row.done .cl-text { text-decoration: line-through; color: var(--muted); }
@@ -217,30 +264,34 @@
       color: var(--muted);
       font-size: 1rem;
       line-height: 1;
-      padding: 4px 6px;
+      padding: 5px 7px;
       min-height: unset;
       border-radius: 6px;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
     .cl-del:active { color: var(--red); }
 
     .cl-add-row {
       display: flex;
       gap: 7px;
-      margin-top: 10px;
+      margin-top: 9px;
     }
     .cl-add-row input { flex: 1; padding: 9px 12px; font-size: 0.9rem; border-radius: 8px; }
     .cl-add-btn {
-      background: var(--blue);
-      color: white;
-      border: none;
+      background: var(--surface2);
+      color: var(--text);
+      border: 1.5px solid var(--border);
       border-radius: 8px;
       padding: 9px 14px;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 700;
       min-height: unset;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
+    .cl-add-btn:active { background: var(--blue); border-color: var(--blue); }
+
     .cl-error { color: #fca5a5; font-size: 0.82rem; margin-top: 6px; display: none; }
     .cl-error.show { display: block; }
 
@@ -254,25 +305,14 @@
       box-shadow: 0 1px 6px rgba(0,0,0,0.2);
     }
 
-    .comment-meta {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 7px;
-    }
+    .comment-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; }
     .comment-author { font-weight: 700; font-size: 0.95rem; color: var(--blue); }
     .comment-ts     { font-size: 0.75rem; color: var(--muted); }
+    .comment-text   { font-size: 0.97rem; line-height: 1.55; word-break: break-word; }
 
-    .comment-text { font-size: 0.97rem; line-height: 1.55; word-break: break-word; }
-
-    /* Replies */
     .replies { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; display: flex; flex-direction: column; gap: 8px; }
 
-    .reply {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
+    .reply { display: flex; gap: 10px; align-items: flex-start; }
     .reply-bar { width: 3px; flex-shrink: 0; background: var(--border); border-radius: 2px; align-self: stretch; }
     .reply-body { flex: 1; }
     .reply-meta { display: flex; align-items: baseline; gap: 7px; margin-bottom: 4px; }
@@ -280,22 +320,15 @@
     .reply-ts     { font-size: 0.72rem; color: var(--muted); }
     .reply-text   { font-size: 0.92rem; line-height: 1.5; word-break: break-word; }
 
-    /* Reply input */
-    .reply-actions { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+    .reply-actions { margin-top: 10px; }
     .btn-reply { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 5px 12px; min-height: unset; border-radius: 20px; }
 
-    .reply-input-row {
-      margin-top: 10px;
-      border-top: 1px solid var(--border);
-      padding-top: 10px;
-      display: none;
-      gap: 7px;
-    }
+    .reply-input-row { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; display: none; gap: 7px; }
     .reply-input-row.open { display: flex; }
     .reply-input-row input { flex: 1; padding: 10px 12px; font-size: 0.9rem; border-radius: 8px; }
     .reply-send { background: var(--blue); color: white; border: none; border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; font-weight: 700; min-height: unset; cursor: pointer; }
 
-    /* ── Error box ───────────────────────────── */
+    /* ── Error box & toast ───────────────────── */
     .error-box {
       background: #450a0a;
       color: #fca5a5;
@@ -308,7 +341,6 @@
     }
     .error-box.show { display: block; }
 
-    /* ── Toast ───────────────────────────────── */
     .toast {
       position: fixed;
       bottom: 22px;
@@ -328,7 +360,6 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ── Empty / loading ─────────────────────── */
     .empty { text-align: center; padding: 28px 16px; color: var(--muted); }
     .empty .icon { font-size: 2.3rem; margin-bottom: 8px; }
     .empty p { font-size: 0.9rem; }
@@ -356,7 +387,7 @@
     </div>
   </div>
 
-  <!-- ── Bring List ──────────────────────────── -->
+  <!-- ── Bring List ─────────────────────────── -->
   <div class="section-title">📦 Bring List</div>
 
   <div class="card">
@@ -368,11 +399,19 @@
     <div class="error-box" id="add-error"></div>
   </div>
 
+  <!-- Sort / filter bar -->
+  <div class="sort-bar">
+    <button class="sort-pill active" id="pill-default" onclick="setSort('default')">Default</button>
+    <button class="sort-pill" id="pill-name"    onclick="setSort('name')">A–Z</button>
+    <button class="sort-pill" id="pill-cl"      onclick="setSort('checklist')">☑ Done last</button>
+    <button class="sort-pill" id="pill-group"   onclick="toggleGroup()">👤 By Person</button>
+  </div>
+
   <div id="item-list">
     <div class="empty"><div class="icon">⏳</div><p>Loading…</p></div>
   </div>
 
-  <!-- ── Comments Thread ────────────────────── -->
+  <!-- ── Comments Thread ───────────────────── -->
   <div class="section-title">💬 Comments</div>
 
   <div class="card">
@@ -393,6 +432,36 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  const NAMES = {{ names | tojson }};
+
+  // ── Persistent name ────────────────────────────────────
+  const nameEl = document.getElementById("my-name");
+  const savedName = localStorage.getItem("vacSignupName");
+  if (savedName) nameEl.value = savedName;
+  nameEl.addEventListener("change", () => localStorage.setItem("vacSignupName", nameEl.value));
+
+  // ── Sort / group state ─────────────────────────────────
+  let sortMode     = "default"; // 'default' | 'name' | 'checklist'
+  let groupByPerson = false;
+  let allItems     = [];
+
+  function setSort(mode) {
+    sortMode = mode;
+    ["default","name","cl"].forEach(k => document.getElementById(`pill-${k}`).classList.remove("active"));
+    if (mode !== "default" || !groupByPerson) {
+      document.getElementById(`pill-${mode === "checklist" ? "cl" : mode}`).classList.add("active");
+    }
+    renderItems(allItems);
+  }
+
+  function toggleGroup() {
+    groupByPerson = !groupByPerson;
+    const pill = document.getElementById("pill-group");
+    pill.classList.toggle("active-amber", groupByPerson);
+    pill.classList.remove("active");
+    renderItems(allItems);
+  }
+
   // ── Helpers ────────────────────────────────────────────
   function esc(s) {
     const d = document.createElement("div");
@@ -401,15 +470,13 @@
   }
 
   function relTime(iso) {
-    const diff = Date.now() - new Date(iso).getTime();
-    const m = Math.floor(diff / 60000);
+    const m = Math.floor((Date.now() - new Date(iso)) / 60000);
     if (m < 1)  return "just now";
     if (m < 60) return `${m}m ago`;
     const h = Math.floor(m / 60);
     if (h < 24) return `${h}h ago`;
-    const day = Math.floor(h / 24);
-    if (day < 7) return `${day}d ago`;
-    return new Date(iso).toLocaleDateString();
+    const d = Math.floor(h / 24);
+    return d < 7 ? `${d}d ago` : new Date(iso).toLocaleDateString();
   }
 
   function toast(msg) {
@@ -419,65 +486,100 @@
     setTimeout(() => t.classList.remove("show"), 2500);
   }
 
-  function showErr(id, msg) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.classList.add("show");
-  }
-  function clearErr(id) {
-    const el = document.getElementById(id);
-    el.textContent = "";
-    el.classList.remove("show");
+  function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add("show"); }
+  function clearErr(id)     { const el = document.getElementById(id); el.textContent = ""; el.classList.remove("show"); }
+
+  // ── Sort logic ─────────────────────────────────────────
+  function clRatio(item) {
+    const cl = item.checklist || [];
+    if (!cl.length) return -1; // no checklist — float before "all done"
+    return cl.filter(c => c.checked).length / cl.length;
   }
 
-  // ── Per-item checklist expand state ────────────────────
-  const openCl = new Set();
+  function sortedItems(items) {
+    const copy = [...items];
+    if (sortMode === "name") {
+      copy.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortMode === "checklist") {
+      copy.sort((a, b) => clRatio(a) - clRatio(b));
+    }
+    return copy;
+  }
 
-  // ── Sign-up list ───────────────────────────────────────
+  // ── Item card HTML ─────────────────────────────────────
+  function itemCardHtml(item) {
+    const cl      = item.checklist || [];
+    const doneAll = cl.length && cl.every(c => c.checked);
+    const classes = ["item-card", item.signed_up_by ? "claimed" : "", doneAll ? "cl-done" : ""].filter(Boolean).join(" ");
+
+    const signRow = item.signed_up_by
+      ? `<span class="chip chip-green">✓ ${esc(item.signed_up_by)}</span>
+         <button class="btn-red" onclick="clearSignup(${item.id})">Clear</button>`
+      : `<span class="chip chip-gray">Available</span>
+         <button class="btn-green" onclick="signUp(${item.id})">Sign Up</button>`;
+
+    const clRows = cl.map(c => `
+      <div class="cl-row${c.checked ? " done" : ""}">
+        <div class="cl-check" onclick="toggleClItem(${item.id},${c.id})">${c.checked ? "✓" : ""}</div>
+        <div class="cl-text">${esc(c.text)}</div>
+        <button class="cl-del" onclick="deleteClItem(${item.id},${c.id})" title="Remove">✕</button>
+      </div>`).join("");
+
+    return `
+      <div class="${classes}" id="ic-${item.id}">
+        <div class="item-name">${esc(item.name)}</div>
+        <div class="item-row">${signRow}</div>
+        <div class="item-checklist">
+          ${clRows}
+          <div class="cl-add-row">
+            <input type="text" id="cl-input-${item.id}" placeholder="Add to checklist…" maxlength="120"
+                   onkeydown="if(event.key==='Enter') addClItem(${item.id})">
+            <button class="cl-add-btn" onclick="addClItem(${item.id})">+</button>
+          </div>
+          <div class="cl-error" id="cl-err-${item.id}"></div>
+        </div>
+      </div>`;
+  }
+
+  // ── Render ─────────────────────────────────────────────
   function renderItems(data) {
-    const list = document.getElementById("item-list");
-    if (!data.length) {
+    allItems = data;
+    const list   = document.getElementById("item-list");
+    const sorted = sortedItems(data);
+
+    if (!sorted.length) {
       list.innerHTML = `<div class="empty"><div class="icon">📋</div><p>No items yet — add the first!</p></div>`;
       return;
     }
 
-    list.innerHTML = data.map(item => {
-      const cl       = item.checklist || [];
-      const done     = cl.filter(c => c.checked).length;
-      const clLabel  = cl.length ? `☑ Checklist (${done}/${cl.length})` : `☑ Checklist`;
-      const isOpen   = openCl.has(item.id);
+    if (groupByPerson) {
+      // Build groups: each name + "Unclaimed"
+      const groups = {};
+      NAMES.forEach(n => { groups[n] = []; });
+      groups["Unclaimed"] = [];
+      sorted.forEach(item => {
+        const key = item.signed_up_by && groups[item.signed_up_by] !== undefined
+          ? item.signed_up_by : "Unclaimed";
+        groups[key].push(item);
+      });
 
-      const clRows = cl.map(c => `
-        <div class="cl-row${c.checked ? " done" : ""}" id="clr-${item.id}-${c.id}">
-          <div class="cl-check" onclick="toggleClItem(${item.id},${c.id})">${c.checked ? "✓" : ""}</div>
-          <div class="cl-text">${esc(c.text)}</div>
-          <button class="cl-del" onclick="deleteClItem(${item.id},${c.id})" title="Remove">✕</button>
-        </div>`).join("");
-
-      const signRow = item.signed_up_by
-        ? `<span class="chip chip-green">✓ ${esc(item.signed_up_by)}</span>
-           <button class="btn-red" onclick="clearSignup(${item.id})">Clear</button>`
-        : `<span class="chip chip-gray">Available</span>
-           <button class="btn-green" onclick="signUp(${item.id})">Sign Up</button>`;
-
-      return `
-        <div class="item-card${item.signed_up_by ? " claimed" : ""}" id="ic-${item.id}">
-          <div class="item-name">${esc(item.name)}</div>
-          <div class="item-row">${signRow}</div>
-          <button class="cl-toggle" onclick="toggleCl(${item.id})">${clLabel} ${isOpen ? "▴" : "▾"}</button>
-          <div class="cl-panel${isOpen ? " open" : ""}" id="cl-panel-${item.id}">
-            ${clRows}
-            <div class="cl-add-row">
-              <input type="text" id="cl-input-${item.id}" placeholder="Add checklist item…" maxlength="120"
-                     onkeydown="if(event.key==='Enter') addClItem(${item.id})">
-              <button class="cl-add-btn" onclick="addClItem(${item.id})">+</button>
-            </div>
-            <div class="cl-error" id="cl-err-${item.id}"></div>
+      const keys = [...NAMES, "Unclaimed"].filter(k => groups[k].length);
+      list.innerHTML = keys.map(name => `
+        <div class="person-group">
+          <div class="person-header">
+            ${name === "Unclaimed" ? "🔓" : "👤"} ${esc(name)}
+            <span class="ph-count">${groups[name].length}</span>
           </div>
-        </div>`;
-    }).join("");
+          <div class="person-group-items">
+            ${groups[name].map(itemCardHtml).join("")}
+          </div>
+        </div>`).join("");
+    } else {
+      list.innerHTML = sorted.map(itemCardHtml).join("");
+    }
   }
 
+  // ── Sign-up API ────────────────────────────────────────
   async function loadItems() {
     try {
       const r = await fetch("/api/items");
@@ -494,18 +596,18 @@
     const btn = document.getElementById("add-btn");
     btn.disabled = true;
     try {
-      const r    = await fetch("/api/items", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({name}) });
+      const r    = await fetch("/api/items", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({name}) });
       const data = await r.json();
       if (!r.ok) { showErr("add-error", data.error); return; }
       input.value = "";
       toast(`"${data.name}" added!`);
       loadItems();
     } catch { showErr("add-error", "Network error — try again."); }
-    finally { btn.disabled = false; }
+    finally   { btn.disabled = false; }
   }
 
   async function signUp(itemId) {
-    const myName = document.getElementById("my-name").value;
+    const myName = nameEl.value;
     if (!myName) { toast("Select your name at the top first!"); return; }
     const r    = await fetch(`/api/items/${itemId}/signup`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({person:myName}) });
     const data = await r.json();
@@ -520,46 +622,27 @@
   }
 
   // ── Per-item checklist ─────────────────────────────────
-  function toggleCl(itemId) {
-    openCl.has(itemId) ? openCl.delete(itemId) : openCl.add(itemId);
-    // toggle DOM directly — no full reload needed
-    const panel  = document.getElementById(`cl-panel-${itemId}`);
-    const toggle = panel && panel.previousElementSibling;
-    if (!panel) return;
-    panel.classList.toggle("open");
-    if (toggle) {
-      const isOpen = panel.classList.contains("open");
-      toggle.textContent = toggle.textContent.replace(/[▴▾]/, isOpen ? "▴" : "▾");
-    }
-    if (panel.classList.contains("open")) {
-      setTimeout(() => document.getElementById(`cl-input-${itemId}`)?.focus(), 60);
-    }
-  }
-
   async function addClItem(itemId) {
     const input = document.getElementById(`cl-input-${itemId}`);
     const errEl = document.getElementById(`cl-err-${itemId}`);
-    const text  = input.value.trim();
-    errEl.textContent = ""; errEl.classList.remove("show");
-    if (!text) { errEl.textContent = "Can't be empty."; errEl.classList.add("show"); return; }
+    const text  = input?.value.trim();
+    if (errEl) { errEl.textContent = ""; errEl.classList.remove("show"); }
+    if (!text) { if (errEl) { errEl.textContent = "Can't be empty."; errEl.classList.add("show"); } return; }
 
     const r    = await fetch(`/api/items/${itemId}/checklist`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text}) });
     const data = await r.json();
-    if (!r.ok) { errEl.textContent = data.error; errEl.classList.add("show"); return; }
+    if (!r.ok) { if (errEl) { errEl.textContent = data.error; errEl.classList.add("show"); } return; }
     input.value = "";
-    openCl.add(itemId); // keep panel open after adding
     loadItems();
   }
 
   async function toggleClItem(itemId, clId) {
     await fetch(`/api/items/${itemId}/checklist/${clId}/toggle`, { method:"POST" });
-    openCl.add(itemId);
     loadItems();
   }
 
   async function deleteClItem(itemId, clId) {
     await fetch(`/api/items/${itemId}/checklist/${clId}`, { method:"DELETE" });
-    openCl.add(itemId);
     loadItems();
   }
 
@@ -570,7 +653,6 @@
       list.innerHTML = `<div class="empty"><div class="icon">💬</div><p>No comments yet — start the conversation!</p></div>`;
       return;
     }
-
     list.innerHTML = [...data].reverse().map(c => {
       const replies = c.replies.map(r => `
         <div class="reply">
@@ -615,17 +697,15 @@
     const row = document.getElementById(`reply-row-${commentId}`);
     if (!row) return;
     row.classList.toggle("open");
-    if (row.classList.contains("open")) {
+    if (row.classList.contains("open"))
       setTimeout(() => document.getElementById(`reply-input-${commentId}`)?.focus(), 60);
-    }
   }
 
   async function postComment() {
-    const author = document.getElementById("my-name").value;
+    const author = nameEl.value;
     const ta     = document.getElementById("new-comment");
     const text   = ta.value.trim();
     clearErr("comment-error");
-
     if (!author) { showErr("comment-error", "Select your name at the top first."); return; }
     if (!text)   { showErr("comment-error", "Comment cannot be empty."); return; }
 
@@ -638,17 +718,15 @@
       ta.value = "";
       loadComments();
     } catch { showErr("comment-error", "Network error — try again."); }
-    finally { btn.disabled = false; }
+    finally   { btn.disabled = false; }
   }
 
   async function submitReply(commentId) {
-    const author = document.getElementById("my-name").value;
+    const author = nameEl.value;
     const input  = document.getElementById(`reply-input-${commentId}`);
     const text   = input.value.trim();
-
     if (!author) { toast("Select your name at the top first!"); return; }
     if (!text)   { toast("Reply can't be empty."); return; }
-
     const r    = await fetch(`/api/comments/${commentId}/replies`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({author, text}) });
     const data = await r.json();
     if (!r.ok) { toast(data.error); return; }
