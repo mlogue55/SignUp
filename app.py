@@ -1,13 +1,16 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 import json
 import os
+import secrets
 import threading
 from datetime import datetime, timezone
 
 app = Flask(__name__)
 lock = threading.Lock()
 
-DATA_FILE = os.environ.get("DATA_FILE", "data.json")
+DATA_FILE    = os.environ.get("DATA_FILE",    "data.json")
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "vacation")
+app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 
 NAMES = [
     "M&M",
@@ -32,6 +35,34 @@ def save_data(data):
     os.makedirs(os.path.dirname(DATA_FILE) if os.path.dirname(DATA_FILE) else ".", exist_ok=True)
     with open(DATA_FILE, "w") as f:
         json.dump(data, f)
+
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+
+@app.before_request
+def require_login():
+    if request.endpoint in ("login", "logout", "static"):
+        return
+    if not session.get("authenticated"):
+        return redirect(url_for("login"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    if request.method == "POST":
+        pwd = request.form.get("password", "")
+        if secrets.compare_digest(pwd, APP_PASSWORD):
+            session["authenticated"] = True
+            return redirect(url_for("index"))
+        error = "Incorrect password — try again."
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 
 # ── Page ──────────────────────────────────────────────────────────────────────

@@ -6,6 +6,9 @@ services:
     volumes:
       - signup_data:/data
     restart: unless-stopped
+    environment:
+      - APP_PASSWORD=vacation          # change this
+      - SECRET_KEY=change-me-to-a-long-random-string
 
 volumes:
   signup_data:

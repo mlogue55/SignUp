@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vacation Sign-Up — Login</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .login-card {
+      background: #1e293b;
+      border-radius: 18px;
+      padding: 36px 28px 32px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    .icon { font-size: 3rem; margin-bottom: 14px; }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-bottom: 28px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #334155;
+      border-radius: 11px;
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      background: #273549;
+      -webkit-appearance: none;
+      appearance: none;
+      text-align: center;
+      letter-spacing: 0.15em;
+      margin-bottom: 14px;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    input[type="password"]::placeholder {
+      color: #475569;
+      letter-spacing: normal;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 11px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: filter 0.1s, transform 0.08s;
+      font-family: inherit;
+    }
+    button[type="submit"]:active { filter: brightness(0.85); transform: scale(0.97); }
+
+    .error {
+      background: #450a0a;
+      color: #fca5a5;
+      border: 1.5px solid #b91c1c;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="icon">🏖️</div>
+    <h1>Vacation Sign-Up</h1>
+    <p class="subtitle">Enter the group password to continue</p>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/login">
+      <input type="password" name="password" placeholder="Password" autofocus autocomplete="current-password">
+      <button type="submit">Sign In</button>
+    </form>
+  </div>
+</body>
+</html>
